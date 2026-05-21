@@ -1,18 +1,83 @@
 import { useEffect, useState } from "react";
-import { BedDouble, CalendarCheck, Users, Hotel } from "lucide-react";
+import { BedDouble, CalendarCheck, Users, Hotel, Plus } from "lucide-react";
 import { api } from "./api";
 import "./App.css";
+
+const emptyRoom = {
+  roomNumber: "",
+  roomType: "Deluxe",
+  pricePerNight: "",
+  status: "AVAILABLE",
+};
+
+const emptyCustomer = {
+  fullName: "",
+  email: "",
+  phone: "",
+  address: "",
+};
+
+const emptyBooking = {
+  customerId: "",
+  roomId: "",
+  checkInDate: "",
+  checkOutDate: "",
+  status: "CONFIRMED",
+  totalAmount: "",
+};
 
 function App() {
   const [rooms, setRooms] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [roomForm, setRoomForm] = useState(emptyRoom);
+  const [customerForm, setCustomerForm] = useState(emptyCustomer);
+  const [bookingForm, setBookingForm] = useState(emptyBooking);
+
+  const loadData = async () => {
+    const [roomRes, customerRes, bookingRes] = await Promise.all([
+      api.get("/rooms"),
+      api.get("/customers"),
+      api.get("/bookings"),
+    ]);
+
+    setRooms(roomRes.data);
+    setCustomers(customerRes.data);
+    setBookings(bookingRes.data);
+  };
 
   useEffect(() => {
-    api.get("/rooms").then((res) => setRooms(res.data));
-    api.get("/customers").then((res) => setCustomers(res.data));
-    api.get("/bookings").then((res) => setBookings(res.data));
+    loadData();
   }, []);
+
+  const createRoom = async (event) => {
+    event.preventDefault();
+    await api.post("/rooms", {
+      ...roomForm,
+      pricePerNight: Number(roomForm.pricePerNight),
+    });
+    setRoomForm(emptyRoom);
+    loadData();
+  };
+
+  const createCustomer = async (event) => {
+    event.preventDefault();
+    await api.post("/customers", customerForm);
+    setCustomerForm(emptyCustomer);
+    loadData();
+  };
+
+  const createBooking = async (event) => {
+    event.preventDefault();
+    await api.post("/bookings", {
+      ...bookingForm,
+      customerId: Number(bookingForm.customerId),
+      roomId: Number(bookingForm.roomId),
+      totalAmount: Number(bookingForm.totalAmount),
+    });
+    setBookingForm(emptyBooking);
+    loadData();
+  };
 
   return (
     <div className="app-shell">
@@ -37,7 +102,10 @@ function App() {
             <p className="eyebrow">Hotel Management System</p>
             <h1>Operations Dashboard</h1>
           </div>
-          <button>New Booking</button>
+          <button>
+            <Plus size={18} />
+            New Booking
+          </button>
         </header>
 
         <section className="stats-grid">
@@ -66,12 +134,61 @@ function App() {
           </div>
         </section>
 
+        <section className="form-grid">
+          <form className="panel form-panel" onSubmit={createRoom}>
+            <h3>Add Room</h3>
+            <input placeholder="Room number" value={roomForm.roomNumber} onChange={(e) => setRoomForm({ ...roomForm, roomNumber: e.target.value })} required />
+            <select value={roomForm.roomType} onChange={(e) => setRoomForm({ ...roomForm, roomType: e.target.value })}>
+              <option>Deluxe</option>
+              <option>Executive</option>
+              <option>Suite</option>
+              <option>Standard</option>
+            </select>
+            <input placeholder="Price per night" type="number" value={roomForm.pricePerNight} onChange={(e) => setRoomForm({ ...roomForm, pricePerNight: e.target.value })} required />
+            <select value={roomForm.status} onChange={(e) => setRoomForm({ ...roomForm, status: e.target.value })}>
+              <option>AVAILABLE</option>
+              <option>OCCUPIED</option>
+              <option>MAINTENANCE</option>
+            </select>
+            <button type="submit">Add Room</button>
+          </form>
+
+          <form className="panel form-panel" onSubmit={createCustomer}>
+            <h3>Add Customer</h3>
+            <input placeholder="Full name" value={customerForm.fullName} onChange={(e) => setCustomerForm({ ...customerForm, fullName: e.target.value })} required />
+            <input placeholder="Email" type="email" value={customerForm.email} onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })} required />
+            <input placeholder="Phone" value={customerForm.phone} onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })} required />
+            <input placeholder="Address" value={customerForm.address} onChange={(e) => setCustomerForm({ ...customerForm, address: e.target.value })} />
+            <button type="submit">Add Customer</button>
+          </form>
+
+          <form className="panel form-panel" onSubmit={createBooking}>
+            <h3>Create Booking</h3>
+            <select value={bookingForm.customerId} onChange={(e) => setBookingForm({ ...bookingForm, customerId: e.target.value })} required>
+              <option value="">Select customer</option>
+              {customers.map((customer) => (
+                <option value={customer.id} key={customer.id}>{customer.fullName}</option>
+              ))}
+            </select>
+            <select value={bookingForm.roomId} onChange={(e) => setBookingForm({ ...bookingForm, roomId: e.target.value })} required>
+              <option value="">Select room</option>
+              {rooms.map((room) => (
+                <option value={room.id} key={room.id}>Room {room.roomNumber}</option>
+              ))}
+            </select>
+            <input type="date" value={bookingForm.checkInDate} onChange={(e) => setBookingForm({ ...bookingForm, checkInDate: e.target.value })} required />
+            <input type="date" value={bookingForm.checkOutDate} onChange={(e) => setBookingForm({ ...bookingForm, checkOutDate: e.target.value })} required />
+            <input placeholder="Total amount" type="number" value={bookingForm.totalAmount} onChange={(e) => setBookingForm({ ...bookingForm, totalAmount: e.target.value })} required />
+            <button type="submit">Create Booking</button>
+          </form>
+        </section>
+
         <section className="content-grid">
           <div className="panel">
             <h3>Rooms</h3>
             {rooms.map((room) => (
               <div className="list-row" key={room.id}>
-                <span>Room {room.roomNumber}</span>
+                <span>Room {room.roomNumber} - {room.roomType}</span>
                 <strong>{room.status}</strong>
               </div>
             ))}
