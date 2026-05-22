@@ -36,5 +36,15 @@ Application deployed on AWS EC2 using Docker Compose.
 ## Screenshots
 (Add screenshots here later)
 
+## Architecture
+
+User → Frontend (React + Nginx) → Backend (Spring Boot) → MariaDB
+
+CI/CD:
+GitHub → GitHub Actions → AWS EC2 Deployment
+
+Monitoring:
+Prometheus → Node Exporter → Grafana
+
 ## Author
 Rushi
