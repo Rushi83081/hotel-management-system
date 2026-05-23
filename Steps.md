@@ -78,8 +78,7 @@ cd hotel-management-system
 ```bash
 docker compose build
 ```
-
-<img width="1920" height="1080" alt="Screenshot (158)" src="https://github.com/user-attachments/assets/b4aaee65-5ee4-4ffe-b9c8-43513fdd9ce7" />
+<img width="1920" height="1080" alt="Screenshot (157)" src="https://github.com/user-attachments/assets/6cb6fb9e-25e8-461c-bfb4-0af4224622bc" />
 
 ---
 
