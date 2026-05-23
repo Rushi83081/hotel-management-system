@@ -114,6 +114,8 @@ Test:
 
 <img width="1920" height="1080" alt="Screenshot (159)" src="https://github.com/user-attachments/assets/e85e8060-1f48-46e6-a4f9-ce48f78b1f5b" />
 
+---
+
 # ⚡ STEP 8 — GitHub Actions CI/CD
 
 Go to:
@@ -124,6 +126,8 @@ GitHub → Actions
 Check:
 - Build success
 - Green pipeline
+
+---
 
 # 📊 STEP 9 — Install Grafana
 
@@ -291,6 +295,8 @@ Click:
 Apply
 ```
 
+---
+
 # STEP 18 — Add Memory Monitoring Panel
 
 Again click:
@@ -298,5 +304,7 @@ Again click:
 Add new panel → Metric: node_memory_MemAvailable_bytes → Click: Run queries → Click: Save dashboard
 ```
 **Click: Save dashboard**
+
+---
 
 # 🚀 END OF PROJECT
