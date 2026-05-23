@@ -1,108 +1,102 @@
-# Steps To Run Project 
+# 🚀 Hotel Management System — DevOps Project
 
-## STEP 1 — Launch EC2 Instance
+A complete DevOps project using:
+- AWS EC2
+- Docker & Docker Compose
+- GitHub Actions CI/CD
+- Grafana + Prometheus Monitoring
+- Node Exporter Metrics
 
-Go to AWS Console: 
+---
 
-Click `Launch Instance`
+# 📌 STEP 1 — Launch EC2 Instance
 
-- Name: hotel-management-devops
-- AMI: Ubuntu Server 24.04 LTS
-- Instance type: t3.small
+Go to AWS Console:
 
-## STEP 2 — Configure Security Group
+👉 EC2 → Launch Instance
 
-Allow these inbound ports:
+Settings:
+- **Name:** hotel-management-devops
+- **AMI:** Ubuntu Server 24.04 LTS
+- **Instance Type:** t3.small
+
+---
+
+# 🔐 STEP 2 — Configure Security Group
+
+Allow inbound ports:
 
 ```text
-22
-80
-8080
-3000
-9090
-9100
+22   → SSH
+80   → Frontend
+8080 → Backend
+3000 → Grafana
+9090 → Prometheus
+9100 → Node Exporter
 ```
-Source: Anywhere IPv4
 
-Connect EC2 Instance
- 
-## STEP 3 — Install Docker
+Source:
+```text
+Anywhere IPv4
+```
 
-Run these commands one by one:
+---
+
+# 🐳 STEP 3 — Install Docker
+
+Run:
 
 ```bash
 sudo apt update
-```
 
-```bash
 sudo apt install docker.io docker-compose-v2 -y
-```
 
-```bash
 sudo systemctl enable docker
-```
-
-```bash
 sudo systemctl start docker
-```
 
-```bash
 sudo usermod -aG docker ubuntu
-```
-
-Apply group changes:
-
-```bash
 newgrp docker
-```
 
-Verify installation:
-
-```bash
 docker --version
-```
-
-```bash
 docker compose version
 ```
 
-## STEP 4 — Clone GitHub Repository
+---
 
-Run:
+# 📥 STEP 4 — Clone Repository
 
 ```bash
 git clone https://github.com/Rushi83081/hotel-management-system.git
-```
-```bash
+
 cd hotel-management-system
 ```
 
-# STEP 5 — Build Docker Containers
+---
 
-Run:
+# 🏗️ STEP 5 — Build Project
 
 ```bash
 docker compose build
 ```
 
-Wait until build completes successfully.
-
 <img width="1920" height="1080" alt="Screenshot (158)" src="https://github.com/user-attachments/assets/b4aaee65-5ee4-4ffe-b9c8-43513fdd9ce7" />
 
-# STEP 6 — Start All Containers
+---
 
-Run:
+# ▶️ STEP 6 — Run Containers
 
 ```bash
 docker compose up -d
 ```
 
-This command starts:
-- frontend
-- backend
-- mariadb
+Services:
+- Frontend
+- Backend
+- MariaDB
 
 <img width="1920" height="1080" alt="Screenshot (158)" src="https://github.com/user-attachments/assets/8422848c-80ca-41b0-98d0-585319badbba" />
+
+---
 
 # STEP 7 — Open Frontend Application
 
@@ -120,14 +114,189 @@ Test:
 
 <img width="1920" height="1080" alt="Screenshot (159)" src="https://github.com/user-attachments/assets/e85e8060-1f48-46e6-a4f9-ce48f78b1f5b" />
 
-# STEP 8 — Verify GitHub Actions Pipeline
-
-Open GitHub repository.
+# ⚡ STEP 8 — GitHub Actions CI/CD
 
 Go to:
 ```text
-Actions
+GitHub → Actions
 ```
 
-Wait for workflow execution.
+Check:
+- Build success
+- Green pipeline
 
+# 📊 STEP 9 — Install Grafana
+
+```bash
+docker run -d \
+--name=grafana \
+-p 3000:3000 \
+--restart always \
+grafana/grafana
+```
+
+Open:
+```text
+http://YOUR_PUBLIC_IP:3000
+```
+
+Login:
+
+```text
+Username: admin
+Password: admin
+```
+*After that add new password 
+
+---
+
+# 📈 STEP 10 — Install Prometheus
+
+```bash
+docker run -d \
+--name=prometheus \
+-p 9090:9090 \
+--restart always \
+prom/prometheus
+```
+
+Open:
+```text
+http://YOUR_PUBLIC_IP:9090
+```
+
+<img width="1920" height="1080" alt="Screenshot (160)" src="https://github.com/user-attachments/assets/b7a048b5-97bc-4847-bb04-7af869bd84a6" />
+
+---
+
+# 🔗 STEP 11 — Connect Prometheus to Grafana
+
+Grafana →  Connections → Data Sources → Add Prometheus
+
+URL:
+```text
+http://YOUR_PUBLIC_IP:9090
+```
+
+Click:
+```text
+Save & Test
+```
+
+---
+
+# 📊 STEP 12 — Create Dashboard
+
+Grafana:
+Left sidebar:
+
+```text
+Dashboards → New → New Dashboard → Add new panel → Datasource: Prometheus  → Metric: up →  Click: Run queries
+```
+Graph should appear.
+
+Click:
+```text
+Save dashboard
+```
+
+---
+
+# 🖥️ STEP 13 — Install Node Exporter
+
+```bash
+docker run -d \
+--name=node-exporter \
+-p 9100:9100 \
+--restart always \
+prom/node-exporter
+```
+
+Verify container:
+
+```bash
+docker ps
+```
+---
+
+# ⚙️ STEP 14 — Configure Prometheus
+
+Create file:
+
+```bash
+nano prometheus.yml
+```
+
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["YOUR_PUBLIC_IP:9100"]
+```
+*REPLACE YOUR_PUBLIC_IP 
+
+---
+
+# 🔄 STEP 15 — Restart Prometheus
+
+```bash
+docker stop prometheus
+docker rm prometheus
+
+docker run -d \
+--name=prometheus \
+-p 9090:9090 \
+--restart always \
+-v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+prom/prometheus
+```
+
+---
+
+# 📡 STEP 16 — Verify Targets
+
+Open:
+```text
+http://YOUR_PUBLIC_IP:9090/targets
+```
+
+You should see:
+- Prometheus → UP
+- Node Exporter → UP
+
+<img width="1920" height="1080" alt="Screenshot (163)" src="https://github.com/user-attachments/assets/2bb71cf1-43c1-4770-aa4a-b210f5873524" />
+
+---
+
+
+# STEP 17 — Add CPU Monitoring Panel
+
+Open Grafana.
+
+Go to:
+```text
+Dashboards → Your Dashboard → Add new panel → Datasource: Prometheus → Metric: node_cpu_seconds_total → Click: Run queries
+```
+Graph should appear.
+
+Click:
+```text
+Apply
+```
+
+# STEP 18 — Add Memory Monitoring Panel
+
+Again click:
+```text
+Add new panel → Metric: node_memory_MemAvailable_bytes → Click: Run queries → Click: Save dashboard
+```
+**Click: Save dashboard**
+
+# 🚀 END OF PROJECT
