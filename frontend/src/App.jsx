@@ -51,18 +51,27 @@ function App() {
   }, []);
 
   const createBooking = async (event) => {
-    event.preventDefault();
+  event.preventDefault();
 
-    await api.post("/bookings", {
-      ...bookingForm,
-      customerId: Number(bookingForm.customerId),
-      roomId: Number(bookingForm.roomId),
-      totalAmount: Number(bookingForm.totalAmount),
-    });
+  await api.post("/bookings", {
+    customer: {
+      id: Number(bookingForm.customerId),
+    },
 
-    setBookingForm(emptyBooking);
-    loadData();
-  };
+    room: {
+      id: Number(bookingForm.roomId),
+    },
+
+    checkInDate: bookingForm.checkInDate,
+    checkOutDate: bookingForm.checkOutDate,
+    status: bookingForm.status,
+    totalAmount: Number(bookingForm.totalAmount),
+  });
+
+  setBookingForm(emptyBooking);
+
+  loadData();
+};
 
   return (
     <div className="app-shell">
