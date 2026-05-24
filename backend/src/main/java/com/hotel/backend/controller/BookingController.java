@@ -101,4 +101,9 @@ public Booking checkoutBooking(@PathVariable Long id) {
 
     return bookingRepository.save(booking);
 }
+    @DeleteMapping("/{id}")
+public void deleteBooking(@PathVariable Long id) {
+
+    bookingRepository.deleteById(id);
+}
 }
