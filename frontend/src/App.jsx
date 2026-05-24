@@ -50,6 +50,40 @@ function App() {
   useEffect(() => {
     loadData();
   }, []);
+  useEffect(() => {
+
+  const selectedRoom = rooms.find(
+    (room) => room.id === Number(bookingForm.roomId)
+  );
+
+  if (
+    selectedRoom &&
+    bookingForm.checkInDate &&
+    bookingForm.checkOutDate
+  ) {
+
+    const checkIn = new Date(bookingForm.checkInDate);
+
+    const checkOut = new Date(bookingForm.checkOutDate);
+
+    const totalDays =
+      (checkOut - checkIn) / (1000 * 60 * 60 * 24);
+
+    const total =
+      totalDays * selectedRoom.pricePerNight;
+
+    setBookingForm((prev) => ({
+      ...prev,
+      totalAmount: total > 0 ? total : 0,
+    }));
+  }
+
+}, [
+  bookingForm.roomId,
+  bookingForm.checkInDate,
+  bookingForm.checkOutDate,
+  rooms,
+]);
   const deleteBooking = async (bookingId) => {
 
   await api.delete(`/bookings/${bookingId}`);
@@ -207,17 +241,11 @@ const checkoutBooking = async (bookingId) => {
             />
 
             <input
-              placeholder="Total amount"
-              type="number"
-              value={bookingForm.totalAmount}
-              onChange={(e) =>
-                setBookingForm({
-                  ...bookingForm,
-                  totalAmount: e.target.value,
-                })
-              }
-              required
-            />
+  placeholder="Total amount"
+  type="number"
+  value={bookingForm.totalAmount}
+  readOnly
+/>
 
             <button type="submit">Book Room</button>
           </form>
