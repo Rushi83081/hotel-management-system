@@ -1,4 +1,4 @@
-# 🚀 Hotel Management System — DevOps Project
+<img width="1898" height="896" alt="Screenshot 2026-05-24 120523" src="https://github.com/user-attachments/assets/f18f99af-c268-4e64-8de1-80d32fc1db28" /># 🚀 Hotel Management System — DevOps Project
 
 A complete DevOps project using:
 - AWS EC2
@@ -174,7 +174,7 @@ http://YOUR_PUBLIC_IP:9090
 
 # 🔗 STEP 11 — Connect Prometheus to Grafana
 
-Grafana →  Connections → Data Sources → Add Prometheus
+Grafana → Connections → Data Sources → Add Prometheus
 
 URL:
 ```text
@@ -186,6 +186,8 @@ Click:
 Save & Test
 ```
 
+<img width="1881" height="898" alt="Screenshot 2026-05-24 115049" src="https://github.com/user-attachments/assets/9ce99271-eb1c-4bd5-a086-543b147e8594" />
+
 ---
 
 # 📊 STEP 12 — Create Dashboard
@@ -194,7 +196,7 @@ Grafana:
 Left sidebar:
 
 ```text
-Dashboards → New → New Dashboard → Add new panel → Datasource: Prometheus  → Metric: up →  Click: Run queries
+Dashboards → Create Dashboard → Add new panel → Configure → Datasource: Prometheus → Metric: up → Click: Run queries
 ```
 Graph should appear.
 
@@ -202,6 +204,8 @@ Click:
 ```text
 Save dashboard
 ```
+
+<img width="1901" height="899" alt="Screenshot 2026-05-24 115544" src="https://github.com/user-attachments/assets/ae467965-352a-4f46-86de-d44df9b2281a" />
 
 ---
 
@@ -220,6 +224,9 @@ Verify container:
 ```bash
 docker ps
 ```
+
+<img width="1876" height="196" alt="Screenshot 2026-05-24 115728" src="https://github.com/user-attachments/assets/8a799c27-220f-4169-878e-1be3584bb41b" />
+
 ---
 
 # ⚙️ STEP 14 — Configure Prometheus
@@ -300,9 +307,11 @@ Apply
 
 Again click:
 ```text
-Add new panel → Metric: node_memory_MemAvailable_bytes → Click: Run queries → Click: Save dashboard
+Add new panel → Metric: node_memory_MemAvailable_bytes → Click: Run queries
 ```
 **Click: Save dashboard**
+
+<img width="1898" height="896" alt="Screenshot 2026-05-24 120523" src="https://github.com/user-attachments/assets/12975f14-79fb-489a-9870-4284ba2ddbd0" />
 
 ---
 
