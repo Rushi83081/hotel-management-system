@@ -213,3 +213,22 @@ button {
     grid-template-columns: 1fr;
   }
 }
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.status.confirmed {
+  background: orange;
+}
+
+.status.completed {
+  background: green;
+}
+
+.status.occupied {
+  background: crimson;
+}
