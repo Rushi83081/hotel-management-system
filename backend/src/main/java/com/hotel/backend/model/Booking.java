@@ -14,11 +14,13 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private Long customerId;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
-    @NotNull
-    private Long roomId;
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     @NotNull
     private LocalDate checkInDate;
