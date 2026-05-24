@@ -50,6 +50,12 @@ function App() {
   useEffect(() => {
     loadData();
   }, []);
+  const deleteBooking = async (bookingId) => {
+
+  await api.delete(`/bookings/${bookingId}`);
+
+  loadData();
+};
 const checkoutBooking = async (bookingId) => {
 
   await api.put(`/bookings/${bookingId}/checkout`);
@@ -245,6 +251,7 @@ const checkoutBooking = async (bookingId) => {
         <th>Status</th>
         <th>Details</th>
         <th>Checkout</th>
+        <th>Delete</th>
       </tr>
     </thead>
 
@@ -279,6 +286,12 @@ const checkoutBooking = async (bookingId) => {
   ) : (
     <span>Completed</span>
   )}
+</td>
+
+<td>
+  <button onClick={() => deleteBooking(booking.id)}>
+    Delete
+  </button>
 </td>
         </tr>
       ))}
