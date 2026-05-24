@@ -216,19 +216,51 @@ function App() {
           </div>
 
           <div className="panel">
-            <h3>Bookings</h3>
+  <h3>Bookings</h3>
 
-            {bookings.map((booking) => (
-              <div className="list-row" key={booking.id}>
-                <span>Booking #{booking.id}</span>
+  <table className="booking-table">
+    <thead>
+      <tr>
+        <th>Room</th>
+        <th>Customer</th>
+        <th>Check-In</th>
+        <th>Check-Out</th>
+        <th>Status</th>
+        <th>Details</th>
+      </tr>
+    </thead>
 
-                <strong>{booking.status}</strong>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-    </div>
+    <tbody>
+      {bookings.map((booking) => (
+        <tr key={booking.id}>
+          <td>
+            {booking.room?.roomNumber}
+          </td>
+
+          <td>
+            {booking.customer?.fullName}
+          </td>
+
+          <td>
+            {booking.checkInDate}
+          </td>
+
+          <td>
+            {booking.checkOutDate}
+          </td>
+
+          <td>
+            {booking.status}
+          </td>
+
+          <td>
+            <button>Details</button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
   );
 }
 
