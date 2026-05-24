@@ -84,4 +84,21 @@ if (sameCustomer && overlap) {
 
         return bookingRepository.save(booking);
     }
+    
+    @PutMapping("/{id}/checkout")
+public Booking checkoutBooking(@PathVariable Long id) {
+
+    Booking booking = bookingRepository.findById(id)
+            .orElseThrow();
+
+    Room room = booking.getRoom();
+
+    room.setStatus("AVAILABLE");
+
+    roomRepository.save(room);
+
+    booking.setStatus("COMPLETED");
+
+    return bookingRepository.save(booking);
+}
 }
