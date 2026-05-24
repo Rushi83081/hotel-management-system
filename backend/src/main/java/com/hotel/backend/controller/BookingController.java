@@ -67,6 +67,14 @@ for (Booking existing : existingBookings) {
                 "Room already booked for selected dates"
         );
     }
+    boolean sameCustomer =
+        existing.getCustomer().getId().equals(customer.getId());
+
+if (sameCustomer && overlap) {
+    throw new RuntimeException(
+            "Customer already has booking for selected dates"
+    );
+}
 }
         room.setStatus("OCCUPIED");
         roomRepository.save(room);
