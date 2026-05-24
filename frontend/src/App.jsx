@@ -33,6 +33,7 @@ function App() {
   const [roomForm, setRoomForm] = useState(emptyRoom);
   const [customerForm, setCustomerForm] = useState(emptyCustomer);
   const [bookingForm, setBookingForm] = useState(emptyBooking);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   const loadData = async () => {
     const [roomRes, customerRes, bookingRes] = await Promise.all([
