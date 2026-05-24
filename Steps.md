@@ -1,4 +1,4 @@
-<img width="1898" height="896" alt="Screenshot 2026-05-24 120523" src="https://github.com/user-attachments/assets/f18f99af-c268-4e64-8de1-80d32fc1db28" /># 🚀 Hotel Management System — DevOps Project
+# 🚀 Hotel Management System — DevOps Project
 
 A complete DevOps project using:
 - AWS EC2
