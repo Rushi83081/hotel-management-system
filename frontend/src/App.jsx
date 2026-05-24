@@ -264,7 +264,9 @@ function App() {
           </td>
 
           <td>
-            <button>Details</button>
+            <button onClick={() => setSelectedBooking(booking)}>
+  Details
+</button>
           </td>
         </tr>
       ))}
