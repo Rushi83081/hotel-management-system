@@ -167,7 +167,9 @@ const checkoutBooking = async (bookingId) => {
             >
               <option value="">Select room</option>
 
-              {rooms.map((room) => (
+             {rooms
+  .filter((room) => room.status === "AVAILABLE")
+  .map((room) => (
                 <option value={room.id} key={room.id}>
                   Room {room.roomNumber} - {room.roomType}
                 </option>
@@ -257,7 +259,11 @@ const checkoutBooking = async (bookingId) => {
 
           <td>{booking.checkOutDate}</td>
 
-          <td>{booking.status}</td>
+          <td>
+  <span className={`status ${booking.status.toLowerCase()}`}>
+    {booking.status}
+  </span>
+</td>
 
           <td>
   <button onClick={() => setSelectedBooking(booking)}>
@@ -266,9 +272,13 @@ const checkoutBooking = async (bookingId) => {
 </td>
 
 <td>
-  <button onClick={() => checkoutBooking(booking.id)}>
-    Checkout
-  </button>
+  {booking.status !== "COMPLETED" ? (
+    <button onClick={() => checkoutBooking(booking.id)}>
+      Checkout
+    </button>
+  ) : (
+    <span>Completed</span>
+  )}
 </td>
         </tr>
       ))}
