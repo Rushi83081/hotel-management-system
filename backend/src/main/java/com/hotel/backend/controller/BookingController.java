@@ -49,7 +49,25 @@ public class BookingController {
         if (room.getStatus().equals("OCCUPIED")) {
             throw new RuntimeException("Room already occupied");
         }
+List<Booking> existingBookings =
+        bookingRepository.findAll();
 
+for (Booking existing : existingBookings) {
+
+    boolean sameRoom =
+            existing.getRoom().getId().equals(room.getId());
+
+    boolean overlap =
+            booking.getCheckInDate().isBefore(existing.getCheckOutDate())
+            &&
+            booking.getCheckOutDate().isAfter(existing.getCheckInDate());
+
+    if (sameRoom && overlap) {
+        throw new RuntimeException(
+                "Room already booked for selected dates"
+        );
+    }
+}
         room.setStatus("OCCUPIED");
         roomRepository.save(room);
 
