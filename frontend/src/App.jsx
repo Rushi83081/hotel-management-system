@@ -225,7 +225,7 @@ function App() {
             ))}
           </div>
 
-          <div className="panel">
+         <div className="panel">
   <h3>Bookings</h3>
 
   <table className="booking-table">
@@ -243,36 +243,103 @@ function App() {
     <tbody>
       {bookings.map((booking) => (
         <tr key={booking.id}>
-          <td>
-            {booking.room?.roomNumber}
-          </td>
+          <td>{booking.room?.roomNumber}</td>
 
-          <td>
-            {booking.customer?.fullName}
-          </td>
+          <td>{booking.customer?.fullName}</td>
 
-          <td>
-            {booking.checkInDate}
-          </td>
+          <td>{booking.checkInDate}</td>
 
-          <td>
-            {booking.checkOutDate}
-          </td>
+          <td>{booking.checkOutDate}</td>
 
-          <td>
-            {booking.status}
-          </td>
+          <td>{booking.status}</td>
 
           <td>
             <button onClick={() => setSelectedBooking(booking)}>
-  Details
-</button>
+              Details
+            </button>
           </td>
         </tr>
       ))}
     </tbody>
   </table>
 </div>
+</section>
+
+{selectedBooking && (
+  <div className="modal-overlay">
+    <div className="modal">
+
+      <h2>Booking Details</h2>
+
+      <p>
+        <strong>Room Number:</strong>{" "}
+        {selectedBooking.room?.roomNumber}
+      </p>
+
+      <p>
+        <strong>Room Type:</strong>{" "}
+        {selectedBooking.room?.roomType}
+      </p>
+
+      <p>
+        <strong>Price:</strong>{" "}
+        ₹{selectedBooking.room?.pricePerNight}
+      </p>
+
+      <p>
+        <strong>Status:</strong>{" "}
+        {selectedBooking.room?.status}
+      </p>
+
+      <hr />
+
+      <p>
+        <strong>Customer:</strong>{" "}
+        {selectedBooking.customer?.fullName}
+      </p>
+
+      <p>
+        <strong>Email:</strong>{" "}
+        {selectedBooking.customer?.email}
+      </p>
+
+      <p>
+        <strong>Phone:</strong>{" "}
+        {selectedBooking.customer?.phone}
+      </p>
+
+      <p>
+        <strong>Address:</strong>{" "}
+        {selectedBooking.customer?.address}
+      </p>
+
+      <hr />
+
+      <p>
+        <strong>Check-In:</strong>{" "}
+        {selectedBooking.checkInDate}
+      </p>
+
+      <p>
+        <strong>Check-Out:</strong>{" "}
+        {selectedBooking.checkOutDate}
+      </p>
+
+      <p>
+        <strong>Total Amount:</strong>{" "}
+        ₹{selectedBooking.totalAmount}
+      </p>
+
+      <button onClick={() => setSelectedBooking(null)}>
+        Close
+      </button>
+
+    </div>
+  </div>
+)}
+
+      </main>
+    </div>
   );
 }
 
