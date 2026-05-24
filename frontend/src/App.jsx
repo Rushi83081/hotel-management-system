@@ -50,7 +50,12 @@ function App() {
   useEffect(() => {
     loadData();
   }, []);
+const checkoutBooking = async (bookingId) => {
 
+  await api.put(`/bookings/${bookingId}/checkout`);
+
+  loadData();
+};
   const createBooking = async (event) => {
   event.preventDefault();
 
@@ -237,6 +242,7 @@ function App() {
         <th>Check-Out</th>
         <th>Status</th>
         <th>Details</th>
+        <th>Checkout</th>
       </tr>
     </thead>
 
@@ -254,10 +260,16 @@ function App() {
           <td>{booking.status}</td>
 
           <td>
-            <button onClick={() => setSelectedBooking(booking)}>
-              Details
-            </button>
-          </td>
+  <button onClick={() => setSelectedBooking(booking)}>
+    Details
+  </button>
+</td>
+
+<td>
+  <button onClick={() => checkoutBooking(booking.id)}>
+    Checkout
+  </button>
+</td>
         </tr>
       ))}
     </tbody>
