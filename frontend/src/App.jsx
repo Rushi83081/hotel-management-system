@@ -62,7 +62,6 @@ function App() {
   // Smart Auto-Checkout Rule Engine
   const checkAutomaticCheckouts = async (allBookings) => {
     const today = new Date();
-    // Normalize today's date to midnight for accurate date-only comparisons
     today.setHours(0, 0, 0, 0);
 
     for (const booking of allBookings) {
@@ -70,12 +69,11 @@ function App() {
         const checkoutDate = new Date(booking.checkOutDate);
         checkoutDate.setHours(0, 0, 0, 0);
 
-        // If checkout date is today or has already passed, run auto-checkout
         if (checkoutDate <= today) {
           try {
             await api.put(`/bookings/${booking.id}/checkout`);
             alert(`📢 Auto-Checkout Notification: Room ${booking.room?.roomNumber || ""} has reached its checkout date and is now AVAILABLE!`);
-            // Reload data after updating values
+            
             const [roomRes, bookingRes] = await Promise.all([
               api.get("/rooms"),
               api.get("/bookings")
@@ -167,6 +165,12 @@ function App() {
     await api.put(`/bookings/${bookingId}/checkout`);
     loadData();
   };
+
+  // --- FILTER LOGIC FOR DROPDOWNS ---
+  // Find IDs of all customers who are currently checked into a room (Status is not COMPLETED)
+  const activeCustomerIds = bookings
+    .filter((b) => b.status !== "COMPLETED" && b.customer?.id)
+    .map((b) => b.customer.id);
 
   return (
     <div className="app-shell">
@@ -302,11 +306,14 @@ function App() {
                   required
                 >
                   <option value="">Select customer</option>
-                  {customers.map((customer) => (
-                    <option value={customer.id} key={customer.id}>
-                      {customer.fullName}
-                    </option>
-                  ))}
+                  {customers
+                    // Filter out any customer who already has an ongoing booking
+                    .filter((customer) => !activeCustomerIds.includes(customer.id))
+                    .map((customer) => (
+                      <option value={customer.id} key={customer.id}>
+                        {customer.fullName}
+                      </option>
+                    ))}
                 </select>
 
                 <select
@@ -316,6 +323,7 @@ function App() {
                 >
                   <option value="">Select room</option>
                   {rooms
+                    // Only show rooms whose status is explicitly AVAILABLE
                     .filter((room) => room.status === "AVAILABLE")
                     .map((room) => (
                       <option value={room.id} key={room.id}>
@@ -349,7 +357,7 @@ function App() {
               </form>
             </section>
 
-            {/* Room Live Status Panel stays on Dashboard */}
+            {/* Room Live Status Panel */}
             <section style={{ marginTop: "20px" }}>
               <div className="panel">
                 <h3>Current Rooms Availability</h3>
@@ -419,7 +427,7 @@ function App() {
           </section>
         )}
 
-        {/* Details Modal with the new "Hide" / Close implementation */}
+        {/* Details Modal */}
         {selectedBooking && (
           <div className="modal-overlay">
             <div className="modal">
