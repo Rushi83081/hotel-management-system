@@ -27,7 +27,7 @@ const emptyBooking = {
 };
 
 function App() {
-  // Navigation State: 'dashboard' or 'bookings'
+  // Navigation State: 'dashboard', 'bookings', 'rooms-view', or 'customers-view'
   const [currentView, setCurrentView] = useState("dashboard");
 
   const [rooms, setRooms] = useState([]);
@@ -166,8 +166,6 @@ function App() {
     loadData();
   };
 
-  // --- FILTER LOGIC FOR DROPDOWNS ---
-  // Find IDs of all customers who are currently checked into a room (Status is not COMPLETED)
   const activeCustomerIds = bookings
     .filter((b) => b.status !== "COMPLETED" && b.customer?.id)
     .map((b) => b.customer.id);
@@ -201,27 +199,46 @@ function App() {
         <header className="topbar">
           <div>
             <p className="eyebrow">Hotel Management System</p>
-            <h1>{currentView === "dashboard" ? "Operations Dashboard" : "Master Bookings Log"}</h1>
+            <h1>
+              {currentView === "dashboard" && "Operations Dashboard"}
+              {currentView === "bookings" && "Master Bookings Log"}
+              {currentView === "rooms-view" && "Hotel Rooms Directory"}
+              {currentView === "customers-view" && "Registered Guests Index"}
+            </h1>
           </div>
         </header>
 
-        {/* Stats Summary Cards */}
+        {/* Interactive Stats Summary Cards */}
         <section className="stats-grid">
-          <div className="stat-card">
+          <div 
+            className={`stat-card clickable-card ${currentView === "rooms-view" ? "selected-card" : ""}`}
+            onClick={() => setCurrentView("rooms-view")}
+            style={{ cursor: "pointer" }}
+          >
             <BedDouble />
             <div>
               <p>Total Rooms</p>
               <h2>{rooms.length}</h2>
             </div>
           </div>
-          <div className="stat-card">
+          
+          <div 
+            className={`stat-card clickable-card ${currentView === "customers-view" ? "selected-card" : ""}`}
+            onClick={() => setCurrentView("customers-view")}
+            style={{ cursor: "pointer" }}
+          >
             <Users />
             <div>
               <p>Customers</p>
               <h2>{customers.length}</h2>
             </div>
           </div>
-          <div className="stat-card">
+          
+          <div 
+            className={`stat-card clickable-card ${currentView === "bookings" ? "selected-card" : ""}`}
+            onClick={() => setCurrentView("bookings")}
+            style={{ cursor: "pointer" }}
+          >
             <CalendarCheck />
             <div>
               <p>Bookings</p>
@@ -230,7 +247,7 @@ function App() {
           </div>
         </section>
 
-        {/* --- VIEW 1: DASHBOARD VIEW --- */}
+        {/* --- VIEW 1: DEFAULT DASHBOARD VIEW --- */}
         {currentView === "dashboard" && (
           <>
             <section className="operations-management-grid">
@@ -307,7 +324,6 @@ function App() {
                 >
                   <option value="">Select customer</option>
                   {customers
-                    // Filter out any customer who already has an ongoing booking
                     .filter((customer) => !activeCustomerIds.includes(customer.id))
                     .map((customer) => (
                       <option value={customer.id} key={customer.id}>
@@ -323,7 +339,6 @@ function App() {
                 >
                   <option value="">Select room</option>
                   {rooms
-                    // Only show rooms whose status is explicitly AVAILABLE
                     .filter((room) => room.status === "AVAILABLE")
                     .map((room) => (
                       <option value={room.id} key={room.id}>
@@ -357,12 +372,15 @@ function App() {
               </form>
             </section>
 
-            {/* Room Live Status Panel */}
+            {/* Room Live Status Quick View */}
             <section style={{ marginTop: "20px" }}>
               <div className="panel">
-                <h3>Current Rooms Availability</h3>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <h3>Current Rooms Availability</h3>
+                  <button onClick={() => setCurrentView("rooms-view")} style={{ fontSize: "13px", padding: "4px 10px" }}>View Full Details</button>
+                </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "15px", marginTop: "15px" }}>
-                  {rooms.map((room) => (
+                  {rooms.slice(0, 8).map((room) => (
                     <div className={`room-card-status ${room.status.toLowerCase()}`} key={room.id} style={{ padding: "15px", borderRadius: "8px", border: "1px solid #ddd", background: room.status === "AVAILABLE" ? "#e6f4ea" : "#fce8e6" }}>
                       <strong>Room {room.roomNumber}</strong>
                       <p style={{ margin: "5px 0 0 0", fontSize: "14px", color: "#555" }}>{room.roomType}</p>
@@ -377,12 +395,13 @@ function App() {
           </>
         )}
 
-        {/* --- VIEW 2: BOOKINGS VIEW --- */}
+        {/* --- VIEW 2: MASTER BOOKINGS LOG VIEW --- */}
         {currentView === "bookings" && (
           <section className="full-width-panel">
             <div className="panel">
-              <div style={{ display: "flex", justifyContent: "between", alignItems: "center", marginBottom: "15px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
                 <h3>Bookings Archive Log</h3>
+                <button onClick={() => setCurrentView("dashboard")} style={{ background: "#6c757d", color: "#fff" }}>Back to Dashboard</button>
               </div>
               
               <table className="booking-table">
@@ -419,6 +438,85 @@ function App() {
                         )}
                       </td>
                       <td><button onClick={() => deleteBooking(booking.id)}>Delete</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* --- VIEW 3: TOTAL ROOMS DETAILS VIEW --- */}
+        {currentView === "rooms-view" && (
+          <section className="full-width-panel">
+            <div className="panel">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+                <h3>Property Rooms Inventory & Live Status</h3>
+                <button onClick={() => setCurrentView("dashboard")} style={{ background: "#6c757d", color: "#fff" }}>Back to Dashboard</button>
+              </div>
+              
+              <table className="booking-table">
+                <thead>
+                  <tr>
+                    <th>Room Number</th>
+                    <th>Room Classification Type</th>
+                    <th>Price Per Night</th>
+                    <th>Current System Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rooms.map((room) => (
+                    <tr key={room.id}>
+                      <td><strong>Room {room.roomNumber}</strong></td>
+                      <td>{room.roomType}</td>
+                      <td>₹{room.pricePerNight}</td>
+                      <td>
+                        <span style={{ 
+                          padding: "4px 10px", 
+                          borderRadius: "4px", 
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                          background: room.status === "AVAILABLE" ? "#e6f4ea" : "#fce8e6",
+                          color: room.status === "AVAILABLE" ? "#137333" : "#c5221f"
+                        }}>
+                          {room.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* --- VIEW 4: CUSTOMERS DIRECTORY VIEW --- */}
+        {currentView === "customers-view" && (
+          <section className="full-width-panel">
+            <div className="panel">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+                <h3>Registered Guests Database Directory</h3>
+                <button onClick={() => setCurrentView("dashboard")} style={{ background: "#6c757d", color: "#fff" }}>Back to Dashboard</button>
+              </div>
+              
+              <table className="booking-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Phone Contact</th>
+                    <th>City Address</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customers.map((customer) => (
+                    <tr key={customer.id}>
+                      <td>#{customer.id}</td>
+                      <td><strong>{customer.fullName}</strong></td>
+                      <td>{customer.email}</td>
+                      <td>{customer.phone}</td>
+                      <td>{customer.address}</td>
                     </tr>
                   ))}
                 </tbody>
