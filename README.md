@@ -100,6 +100,20 @@ The project uses **GitHub Actions** for Continuous Integration and Continuous De
 ## 🖧 Node Exporter
 - Exposes Linux server metrics to Prometheus
 
+## Monitoring Stack
+
+The project includes monitoring services in `docker-compose.yml`:
+
+- Prometheus on port `9090`
+- Grafana on port `3000`
+- Node Exporter on port `9100`
+
+Prometheus scrapes:
+
+- Spring Boot Actuator metrics from backend
+- Node Exporter server metrics
+- Prometheus self-metrics
+- 
 ---
 
 # ☁️ Deployment
