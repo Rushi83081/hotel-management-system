@@ -17,3 +17,4 @@ Thumbs.db
 target/
 node_modules/
 .env
+webhook.log
