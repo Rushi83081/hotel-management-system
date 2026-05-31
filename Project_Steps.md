@@ -315,4 +315,359 @@ Add new panel → Metric: node_memory_MemAvailable_bytes → Click: Run queries
 
 ---
 
+---
+
+# 🚀 STEP 19 — Create Deployment Script
+
+Navigate to the project directory:
+
+```bash
+cd ~/hotel-management-system
+```
+
+Create deployment script:
+
+```bash
+nano deploy.sh
+```
+
+Paste the following:
+
+```bash
+#!/bin/bash
+
+cd ~/hotel-management-system || exit 1
+
+git pull origin main
+
+docker compose down
+docker compose up -d --build
+
+docker image prune -f
+```
+
+Make the script executable:
+
+```bash
+chmod +x deploy.sh
+```
+
+Verify deployment script:
+
+```bash
+./deploy.sh
+```
+
+---
+
+# 🔔 STEP 20 — Create Webhook Server
+
+Create webhook server file:
+
+```bash
+nano webhook-server.js
+```
+
+Paste:
+
+```javascript
+const http = require("http");
+const { exec } = require("child_process");
+
+const PORT = 9000;
+
+const server = http.createServer((req, res) => {
+  if (req.method !== "POST" || req.url !== "/deploy") {
+    res.writeHead(404);
+    return res.end("Not found");
+  }
+
+  exec("./deploy.sh", (error, stdout, stderr) => {
+    if (error) {
+      console.error(stderr);
+      res.writeHead(500);
+      return res.end("Deploy failed");
+    }
+
+    console.log(stdout);
+    res.writeHead(200);
+    res.end("Deploy started");
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Webhook server running on port ${PORT}`);
+});
+```
+
+---
+
+# 📦 STEP 21 — Install Node.js & NPM
+
+Install Node.js and npm:
+
+```bash
+sudo apt update
+sudo apt install nodejs npm -y
+```
+
+Verify installation:
+
+```bash
+node -v
+npm -v
+```
+
+Expected output:
+
+```text
+vXX.X.X
+X.X.X
+```
+
+---
+
+# ▶️ STEP 22 — Start Webhook Server
+
+Start the webhook service:
+
+```bash
+nohup node webhook-server.js > webhook.log 2>&1 &
+```
+
+Check logs:
+
+```bash
+cat webhook.log
+```
+
+Expected output:
+
+```text
+Webhook server running on port 9000
+```
+
+---
+
+# 🔓 STEP 23 — Open Port 9000
+
+In AWS EC2 Security Group add an inbound rule:
+
+```text
+Type   : Custom TCP
+Port   : 9000
+Source : Anywhere IPv4
+```
+
+Save the rule.
+
+---
+
+# 🔗 STEP 24 — Configure GitHub Webhook
+
+Open GitHub Repository:
+
+```text
+Settings → Webhooks → Add webhook
+```
+
+Configure:
+
+```text
+Payload URL:
+http://YOUR_PUBLIC_IP:9000/deploy
+
+Content Type:
+application/json
+
+SSL Verification:
+Disable
+
+Events:
+Just the push event
+
+Active:
+✓ Checked
+```
+
+Click:
+
+```text
+Add Webhook
+```
+
+---
+
+# 🧪 STEP 25 — Test Webhook Deployment
+
+Trigger deployment manually:
+
+```bash
+curl -X POST http://YOUR_PUBLIC_IP:9000/deploy
+```
+
+Expected response:
+
+```text
+Deploy started
+```
+
+Check logs:
+
+```bash
+tail -50 webhook.log
+```
+
+---
+
+# 🔄 STEP 26 — Verify Automatic Deployment
+
+Make a small change in GitHub repository and push to:
+
+```text
+main branch
+```
+
+Webhook should automatically:
+
+```text
+✅ Pull latest code
+✅ Rebuild Docker containers
+✅ Restart application
+```
+
+Verify running containers:
+
+```bash
+docker ps
+```
+
+---
+
+# 📊 STEP 27 — Verify Monitoring Stack
+
+Check Prometheus Targets:
+
+```text
+http://YOUR_PUBLIC_IP:9090/targets
+```
+
+Expected:
+
+```text
+prometheus     → UP
+node-exporter  → UP
+```
+
+Open Grafana:
+
+```text
+http://YOUR_PUBLIC_IP:3000
+```
+
+Login:
+
+```text
+Username : admin
+Password : admin
+```
+
+---
+
+# 📈 STEP 28 — Create Grafana Dashboard
+
+Navigate to:
+
+```text
+Dashboards → New Dashboard → Add Visualization
+```
+
+Select:
+
+```text
+Prometheus Data Source
+```
+
+Add panels using:
+
+### Server Availability
+
+```promql
+up
+```
+
+### CPU Metrics
+
+```promql
+node_cpu_seconds_total
+```
+
+### Memory Metrics
+
+```promql
+node_memory_MemAvailable_bytes
+```
+
+Save dashboard as:
+
+```text
+Hotel Management Monitoring
+```
+
+---
+
+# 🎯 Final Project Features
+
+### ☁️ Cloud & Infrastructure
+
+✅ AWS EC2 Deployment
+✅ Linux Administration
+✅ Security Group Configuration
+
+### 🐳 Containerization
+
+✅ Docker
+✅ Docker Compose
+
+### ⚙️ CI/CD & Automation
+
+✅ GitHub Actions CI/CD
+✅ GitHub Webhook Auto Deployment
+✅ Automated Container Rebuilds
+
+### 🌐 Application Stack
+
+✅ React Frontend
+✅ Spring Boot Backend
+✅ MariaDB Database
+✅ Nginx Reverse Proxy
+
+### 📊 Monitoring & Observability
+
+✅ Prometheus Monitoring
+✅ Grafana Dashboards
+✅ Node Exporter Metrics
+
+### 🏨 Hotel Management Features
+
+✅ Room Management
+✅ Customer Management
+✅ Booking Management
+✅ Booking Validation
+✅ Room Availability Tracking
+✅ Auto Checkout Workflow
+
+---
+
+# 🎉 Project Successfully Deployed
+
+The Hotel Management System is now fully deployed with:
+
+* Automated CI/CD Pipeline
+* Auto Deployment using GitHub Webhooks
+* Monitoring with Prometheus & Grafana
+* Dockerized Full-Stack Architecture
+* AWS EC2 Hosting
+* Production-Ready Deployment Workflow
+
 # 🚀 END OF PROJECT
